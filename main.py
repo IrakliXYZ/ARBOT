@@ -32,7 +32,6 @@ funding_url = "https://ftx.com/api/funding_rates"
 maker_fee = float(os.getenv('MAKER_FEE'))
 taker_fee = float(os.getenv('TAKER_FEE'))
 
-
 # Table maker
 def table(values):
     first = values[0]
@@ -71,7 +70,6 @@ def difference(A, B):
     return (A - B) / B
 # print(difference(BTCPERP()['BTCPERP_price'], BTCUSD()['BTCUSD_price']))
 
-
 # Get funding rates (1hr, 1d=24hr, 1w=7d, 1m=30d, 1y=365d)
 def funding_rates(pair):
     response = requests.get(funding_url).json()['result']
@@ -80,7 +78,6 @@ def funding_rates(pair):
             rate = "{:.8f}".format(float(i['rate']))
             return {'funding hr': rate, 'funding d': float(rate) * 24, 'funding w': float(rate) * 24 * 7, 'funding m': float(rate) * 24 * 30, 'funding y': float(rate) * 24 * 365}
 # print(funding_rates('BTC-PERP')['funding y'])
-
 
 # Calculate possible profits (amount, funding_rate, trading_fee, difference, leverage)
 def profit(amount, funding_rate, trading_fee, difference, leverage):
@@ -91,16 +88,54 @@ def profit(amount, funding_rate, trading_fee, difference, leverage):
     # print ("difference =", (traded_amount * difference))
     # print ("total =", (working_amount * funding_rate) - (traded_amount * trading_fee * 2) - (traded_amount * difference))
     return (working_amount * funding_rate) - (traded_amount * trading_fee * 2) - (traded_amount * difference)
-# print(rofit(10000, float(funding_rates('ETH-PERP')['funding y']), taker_fee, difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']), 3))
 
 
 # APR calculator
 def apr_calculator(profit, amount):
     return (profit / amount) * 100
 
-
-yearly_profit_eth = profit(10000, float(funding_rates('ETH-PERP')['funding y']), taker_fee, difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']), 3)
-
 yearly_profit_btc = profit(10000, float(funding_rates('BTC-PERP')['funding y']), taker_fee, difference(PERP('BTC-PERP')['PERP_price'], USD('BTC/USD')['USD_price']), 3)
+yearly_profit_eth = profit(10000, float(funding_rates('ETH-PERP')['funding y']), taker_fee, difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']), 3)
+yearly_profit_sol = profit(10000, float(funding_rates('SOL-PERP')['funding y']), taker_fee, difference(PERP('SOL-PERP')['PERP_price'], USD('SOL/USD')['USD_price']), 3)
 
-print(apr_calculator(yearly_profit_btc, 10000))
+data = []
+
+# loop through available coins and append to the list
+data.append({
+    'pair': 'Pair Name',
+    'funding_rate': 'Funding Rate',
+    'trading_fee': 'Trading Fees',
+    'difference': 'Difference',
+    'leverage': 'Leverage',
+    'profit': 'Yearly Profits',
+    'apr': 'APR'
+})
+data.append({
+    'pair': 'BTC-PERP',
+    'funding_rate': float(funding_rates('BTC-PERP')['funding y']),
+    'trading_fee': taker_fee,
+    'difference': difference(PERP('BTC-PERP')['PERP_price'], USD('BTC/USD')['USD_price']),
+    'leverage': 3,
+    'profit': yearly_profit_btc,
+    'apr': apr_calculator(yearly_profit_btc, 10000)
+})
+data.append({
+    'pair': 'ETH-PERP',
+    'funding_rate': float(funding_rates('ETH-PERP')['funding y']),
+    'trading_fee': taker_fee,
+    'difference': difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']),
+    'leverage': 3,
+    'profit': yearly_profit_eth,
+    'apr': apr_calculator(yearly_profit_eth, 10000)
+})
+data.append({
+    'pair': 'SOL-PERP',
+    'funding_rate': float(funding_rates('SOL-PERP')['funding y']),
+    'trading_fee': taker_fee,
+    'difference': difference(PERP('SOL-PERP')['PERP_price'], USD('SOL/USD')['USD_price']),
+    'leverage': 3,
+    'profit': yearly_profit_sol,
+    'apr': apr_calculator(yearly_profit_sol, 10000)
+})
+
+print(table(data))

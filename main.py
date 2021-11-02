@@ -3,7 +3,7 @@
 # find the best one v2
 # get prices/quotes +
 # calculate the difference +
-# get funding rates + (error checking?)
+# get funding rates
 
 # get volumes/liquidity for a given amount (from orderbook)
 # calculate possible profits
@@ -32,6 +32,8 @@ funding_url = "https://ftx.com/api/funding_rates"
 maker_fee = float(os.getenv('MAKER_FEE'))
 taker_fee = float(os.getenv('TAKER_FEE'))
 amnt = float(input('Amount of money to invest: '))
+lvrg = float(input('Intended leverage (1-5): '))
+period = input('Period (hr, d, w, m, y): ')
 
 Available_FTX = ['BTC', 'ETH', 'SOL', 'BNB', 'FTT', 'MATIC', 'XRP', 'LTC', 'SUSHI', 'RAY', 'LINK', 'CRV', 'COMP', 'GRT', '1INCH']
 markets_response = requests.get(markets_url).json()['result']
@@ -95,56 +97,39 @@ def profit(amount, funding_rate, trading_fee, difference, leverage):
     return (working_amount * funding_rate) - (traded_amount * trading_fee * 2) - (traded_amount * difference)
 
 
-# APR calculator
-def apr_calculator(profit, amount):
+# Effective rate calculator
+def effective_rate_calculator(profit, amount):
     return (profit / amount) * 100
 
 
-yearly_profit_btc = profit(amnt, float(funding_rates('BTC-PERP')['funding y']), taker_fee, difference(PERP('BTC-PERP')['PERP_price'], USD('BTC/USD')['USD_price']), 3)
-yearly_profit_eth = profit(amnt, float(funding_rates('ETH-PERP')['funding y']), taker_fee, difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']), 3)
-yearly_profit_sol = profit(amnt, float(funding_rates('SOL-PERP')['funding y']), taker_fee, difference(PERP('SOL-PERP')['PERP_price'], USD('SOL/USD')['USD_price']), 3)
+# Generate a list of all available pairs
+def generate_list():
+    # Make a data header
+    data = []
+    data.append({
+        'pair': 'Name',
+        'funding_rate': 'Funding %/' + period,
+        'spread': 'Spread %',
+        'profit': 'Profits $',
+        'effective_rate': 'Effective Rate %/' + period
+    })
 
+    # loop through available coins and append to the list
+    for i in Available_FTX:
+        data.append({
+            'pair': i,
+            'funding_rate': "{:.5f}".format(float(funding_rates(i + '-PERP')['funding ' + period])),
+            'spread': "{:.5f}".format(float(difference(PERP(i + '-PERP')['PERP_price'], USD(i + '/USD')['USD_price'])) * 100),
+            'profit': "{:.2f}".format(profit(amnt, float(funding_rates(i + '-PERP')['funding ' + period]), maker_fee, difference(PERP(i + '-PERP')['PERP_price'], USD(i + '/USD')['USD_price']), lvrg)),
+            'effective_rate': "{:.3f}".format(effective_rate_calculator(profit(amnt, float(funding_rates(i + '-PERP')['funding ' + period]), maker_fee, difference(PERP(i + '-PERP')['PERP_price'], USD(i + '/USD')['USD_price']), lvrg), amnt))
+        })
+    return data
+    
 
-data = []
-
-# loop through available coins and append to the list
-data.append({
-    'pair': 'Pair Name',
-    'funding_rate': 'Funding Rate',
-    'trading_fee': 'Trading Fees',
-    'difference': 'Difference',
-    'leverage': 'Leverage',
-    'profit': 'Yearly Profits',
-    'apr': 'APR'
-})
-
-
-data.append({
-    'pair': 'BTC-PERP',
-    'funding_rate': float(funding_rates('BTC-PERP')['funding y']),
-    'trading_fee': taker_fee,
-    'difference': difference(PERP('BTC-PERP')['PERP_price'], USD('BTC/USD')['USD_price']),
-    'leverage': 3,
-    'profit': yearly_profit_btc,
-    'apr': apr_calculator(yearly_profit_btc, amnt)
-})
-data.append({
-    'pair': 'ETH-PERP',
-    'funding_rate': float(funding_rates('ETH-PERP')['funding y']),
-    'trading_fee': taker_fee,
-    'difference': difference(PERP('ETH-PERP')['PERP_price'], USD('ETH/USD')['USD_price']),
-    'leverage': 3,
-    'profit': yearly_profit_eth,
-    'apr': apr_calculator(yearly_profit_eth, amnt)
-})
-data.append({
-    'pair': 'SOL-PERP',
-    'funding_rate': float(funding_rates('SOL-PERP')['funding y']),
-    'trading_fee': taker_fee,
-    'difference': difference(PERP('SOL-PERP')['PERP_price'], USD('SOL/USD')['USD_price']),
-    'leverage': 3,
-    'profit': yearly_profit_sol,
-    'apr': apr_calculator(yearly_profit_sol, amnt)
-})
-
+data = generate_list()
 print(table(data))
+
+# # for loop to find the best rate
+# for i in data:
+#     if i['effective_rate'] == max(data, key=lambda x: x['effective_rate'])['effective_rate']:
+#         print("The best rate is:", i['pair'], "with an effective rate of", i['effective_rate'], "%/", period)

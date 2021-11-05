@@ -1,23 +1,28 @@
 # This file keeps the program running and collects the data
 
 # Import the necessary packages
-import time
+import time, datetime, json
 
 # Import sibling modules
 import sourcer, builder
 
-# # Run the script every hour and add the results to csv file
-# while True:
-#     def write_to_csv():
-#         with open('tracker.csv', 'a') as f:
-#             f.write(str(builder.generate_list()))
-#             f.write('\n')
-#     calculator.write_to_csv()
-#     time.sleep(3600)
- 
-# Run the script every hour and add the results to csv file
+# pairs, that have leverages, that have data (spread, profit, effective rate...) that have hourly data
+while True:
+    for pair in sourcer.available_FTX:
+        for leverage in sourcer.available_leverages:
+            # Get the data
+            data = builder.generate_list(pair, 10000, leverage)
 
-# I have pairs, that have leverages, that have data (spread, profit, effective rate...) that have hourly data
+            # Add the data to the json file
+            with open('tracker.json', 'a') as f:
+                # Problem here: need to format correctly in multidimensional way
+                f.write(json.dumps({'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), 'pair': pair, 'leverage': leverage, 'data': data} ))
+                f.write(',\n')
 
-for pair in sourcer.available_FTX:
-    builder.generate_list(pair, 10000, lvrg)
+    # Wait for the next hour
+    time.sleep(10)
+
+# loop that runs every hour and adds the builder.generate_list(pair, amnt, lvrg) data to the json file
+
+
+

@@ -21,6 +21,8 @@ def difference(A, B):
 def profit(amount, funding_rate, trading_fee, difference, leverage):
     working_amount = amount * (leverage / (leverage + 1))
     traded_amount = amount * 2
+    print('amount', amount, 'fund rate', funding_rate, 'trad fee', trading_fee, 'diffr', difference, 'lvrg', leverage)
+    print('working amnt', working_amount, 'traded amnt', traded_amount, 'revenue', working_amount * funding_rate, 'trading fees', traded_amount * trading_fee * 2, 'spread loss', traded_amount * difference)
     return (working_amount * funding_rate) - (traded_amount * trading_fee * 2) - (traded_amount * difference)
 
 

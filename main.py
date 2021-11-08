@@ -142,10 +142,12 @@
 
 
 # Import sibling modules
-import builder
+import builder, tracker
 
 amnt = float(input('Amount of money to invest: '))
 lvrg = float(input('Intended leverage (1-5): '))
 period = input('Period (h, d, w, m, y): ')
 
-print(builder.generate_table(amnt, lvrg, period))
+
+# print(builder.generate_table(amnt, lvrg, period))
+tracker

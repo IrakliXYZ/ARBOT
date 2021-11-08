@@ -8,6 +8,7 @@ markets_url = "https://ftx.com/api/markets"
 funding_url = "https://ftx.com/api/funding_rates"
 
 available_FTX = ['BTC', 'ETH', 'SOL', 'BNB', 'FTT', 'MATIC', 'XRP', 'LTC', 'SUSHI', 'RAY', 'LINK', 'CRV', 'COMP', 'GRT', '1INCH']
+available_leverages = [1, 2, 3, 4, 5, 6, 7]
 markets_response = requests.get(markets_url).json()['result']
 funding_response = requests.get(funding_url).json()['result']
 

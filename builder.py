@@ -1,14 +1,14 @@
-# This file builds the tables and dictionaries
+# This file builds the tables and dictionaries (FTX)
 
 # Import the modules
 import os, datetime
 
 # Import sibling modules
-import calculator, sourcer
+import calculator, FTX_sourcer
 
 # Variables
-maker_fee = float(os.getenv('MAKER_FEE'))
-taker_fee = float(os.getenv('TAKER_FEE'))
+maker_fee = float(os.getenv('FTX_MAKER_FEE'))
+taker_fee = float(os.getenv('FTX_TAKER_FEE'))
 
 # Table maker
 def table(values):
@@ -22,13 +22,13 @@ def table(values):
 # Generate only list dictionary
 def generate_list(pair, lvrg):
     amnt = 10000.00
-    pair_funding_rate = sourcer.funding_rates(pair + '-PERP')
+    pair_funding_rate = FTX_sourcer.funding_rates(pair + '-PERP')
     pair_funding_rate_h = float(pair_funding_rate['funding h'])
     pair_funding_rate_d = float(pair_funding_rate['funding d'])
     pair_funding_rate_w = float(pair_funding_rate['funding w'])
     pair_funding_rate_m = float(pair_funding_rate['funding m'])
     pair_funding_rate_y = float(pair_funding_rate['funding y'])
-    calculated_spread = float(calculator.difference(sourcer.PERP(pair + '-PERP')['PERP_price'], sourcer.USD(pair + '/USD')['USD_price']))
+    calculated_spread = float(calculator.difference(FTX_sourcer.PERP(pair + '-PERP')['PERP_price'], sourcer.USD(pair + '/USD')['USD_price']))
 
     # data.append({
     #     datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -91,7 +91,7 @@ def generate_list(pair, lvrg):
 
 # Generate a printable table of all available pairs with a header
 def generate_table(amnt, lvrg, period):
-    available_FTX = sourcer.available_FTX
+    available_FTX = FTX_sourcer.available_FTX
 
     data = []
 
@@ -106,8 +106,8 @@ def generate_table(amnt, lvrg, period):
 
     # Loop through available coins and append to the list
     for i in available_FTX:
-        pair_funding_rate = float(sourcer.funding_rates(i + '-PERP')['funding ' + period])
-        calculated_spread = float(calculator.difference(sourcer.PERP(i + '-PERP')['PERP_price'], sourcer.USD(i + '/USD')['USD_price']))
+        pair_funding_rate = float(FTX_sourcer.funding_rates(i + '-PERP')['funding ' + period])
+        calculated_spread = float(calculator.difference(FTX_sourcer.PERP(i + '-PERP')['PERP_price'], sourcer.USD(i + '/USD')['USD_price']))
         calculated_profit = calculator.profit(amnt, pair_funding_rate, taker_fee, calculated_spread, lvrg)
         data.append({
             'pair': i,

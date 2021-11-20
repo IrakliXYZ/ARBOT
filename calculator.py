@@ -1,14 +1,14 @@
-# This file crunches the numbers
+# This file crunches the numbers (FTX)
 
 # Import the necessary packages
 import os
 
 # Import sibling modules
-import sourcer
+import FTX_sourcer
 
 # Variables
-maker_fee = float(os.getenv('MAKER_FEE'))
-taker_fee = float(os.getenv('TAKER_FEE'))
+maker_fee = float(os.getenv('FTX_MAKER_FEE'))
+taker_fee = float(os.getenv('FTX_TAKER_FEE'))
 
 
 # Calculate the percent difference between BTC-PERP and BTC/USD

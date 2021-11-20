@@ -1,4 +1,4 @@
-# This file sources the data from FTX (more exchanges soon)
+# This file sources the data (FTX)
 
 # Import the modules
 import requests
@@ -14,9 +14,9 @@ funding_response = requests.get(funding_url).json()['result']
 
 
 # Get PERP price, ask, bid
-def PERP(pair):
+def PERP(coin):
     for i in markets_response:
-        if i['name'] == pair:
+        if i['name'] == coin:
             PERP_price = i['last']
             PERP_ask = i['ask']
             PERP_bid = i['bid']
@@ -25,9 +25,9 @@ def PERP(pair):
 
 
 # Get pair (/USD) price, ask, bid
-def USD(pair):
+def USD(coin):
     for i in markets_response:
-        if i['name'] == pair:
+        if i['name'] == coin:
             USD_price = i['last']
             USD_ask = i['ask']
             USD_bid = i['bid']
@@ -36,9 +36,9 @@ def USD(pair):
 
 
 # Get funding rates (1hr, 1d=24hr, 1w=7d, 1m=30d, 1y=365d)
-def funding_rates(pair):
+def funding_rates(coin):
     for i in funding_response:
-        if i['future'] == pair:
+        if i['future'] == coin:
             rate = "{:.8f}".format(float(i['rate']))
             return {'funding h': rate, 'funding d': float(rate) * 24, 'funding w': float(rate) * 24 * 7, 'funding m': float(rate) * 24 * 30, 'funding y': float(rate) * 24 * 365}
 # print(funding_rates('BTC-PERP')['funding y'])

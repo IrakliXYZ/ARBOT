@@ -33,8 +33,12 @@
 # Import sibling modules
 import builder, controller
 
-amnt = float(input('Amount of money to invest: '))
-lvrg = float(input('Intended leverage (1-5): '))
-period = input('Period (h, d, w, m, y): ')
+exchange = input('Enter the exchange you want to use: (ftx) ')
+action = input('Enter the action you want to perform: (open, close) ')
+coin = input('Enter the pair you want to use: (BTC, ETH, SOL...) ')
+amount = float(input('Amount of money to invest: '))
+leverage = float(input('Intended leverage (1-5): '))
+# period = input('Period (h, d, w, m, y): ')
+price = None
 
-
+controller.set_exchange(exchange, action, coin, amount, leverage, price)

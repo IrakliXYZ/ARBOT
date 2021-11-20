@@ -1,4 +1,4 @@
-# This file keeps the program running and collects the data
+# This file keeps the program running and collects the data (FTX)
 
 # Import the necessary packages
 import time, csv

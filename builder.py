@@ -28,7 +28,7 @@ def generate_list(pair, lvrg):
     pair_funding_rate_w = float(pair_funding_rate['funding w'])
     pair_funding_rate_m = float(pair_funding_rate['funding m'])
     pair_funding_rate_y = float(pair_funding_rate['funding y'])
-    calculated_spread = float(calculator.difference(FTX_sourcer.PERP(pair + '-PERP')['PERP_price'], sourcer.USD(pair + '/USD')['USD_price']))
+    calculated_spread = float(calculator.difference(FTX_sourcer.PERP(pair + '-PERP')['PERP_price'], FTX_sourcer.USD(pair + '/USD')['USD_price']))
 
     # data.append({
     #     datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -107,7 +107,7 @@ def generate_table(amnt, lvrg, period):
     # Loop through available coins and append to the list
     for i in available_FTX:
         pair_funding_rate = float(FTX_sourcer.funding_rates(i + '-PERP')['funding ' + period])
-        calculated_spread = float(calculator.difference(FTX_sourcer.PERP(i + '-PERP')['PERP_price'], sourcer.USD(i + '/USD')['USD_price']))
+        calculated_spread = float(calculator.difference(FTX_sourcer.PERP(i + '-PERP')['PERP_price'], FTX_sourcer.USD(i + '/USD')['USD_price']))
         calculated_profit = calculator.profit(amnt, pair_funding_rate, taker_fee, calculated_spread, lvrg)
         data.append({
             'pair': i,

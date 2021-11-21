@@ -3,9 +3,6 @@
 # Import the necessary packages
 import os
 
-# Import sibling modules
-import FTX_sourcer
-
 # Variables
 maker_fee = float(os.getenv('FTX_MAKER_FEE'))
 taker_fee = float(os.getenv('FTX_TAKER_FEE'))

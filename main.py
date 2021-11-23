@@ -31,7 +31,7 @@
 
 
 # Import sibling modules
-import builder, controller
+import builder, controller, checker
 
 # exchange = input('Enter the exchange you want to use: (ftx) ')
 # action = input('Enter the action you want to perform: (open, close) ')
@@ -43,4 +43,5 @@ import builder, controller
 
 # controller.set_exchange(exchange, action, coin, amount, leverage, price)
 
-print(builder.generate_table(1000, 2, 'm'))
+print(builder.generate_table(1000, 2, 'y'))
+print(checker.sum_funding_payments())
